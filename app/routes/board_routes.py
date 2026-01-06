@@ -33,3 +33,30 @@ def create_board():
     db.session.commit()
 
     return {"board": new_board.to_dict()}, 201
+
+@boards_bp.post("/<board_id>/cards")
+def create_card_with_board_id(board_id):
+    board = validate_model(Board, board_id)
+
+    request_body = request.get_json()
+    request_body["board_id"] = board.id
+
+    try:
+        new_card = Card.from_dict(request_body)
+    except KeyError as error:
+        return {"error": f"this is what you requested: {request_body}"}, 400
+    
+    board.cards.append(new_card)
+    
+    db.session.add(new_card)
+    db.session.commit()
+
+    return new_card.to_dict(), 201
+
+@boards_bp.get("/<board_id>/cards")
+def get_all_cards_from_board_id(board_id):
+    board = validate_model(Board, board_id)
+    
+    return board.to_dict(), 200
+
+

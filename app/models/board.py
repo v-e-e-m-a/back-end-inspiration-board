@@ -11,7 +11,8 @@ class Board(db.Model):
         board_as_dict = {
             "id": self.id,
             "name": self.name,
-            "owner": self.owner
+            "owner": self.owner,
+            "cards": [card.to_dict() for card in self.cards]
         }
         return board_as_dict
     
