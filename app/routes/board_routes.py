@@ -2,7 +2,7 @@ from flask import Blueprint, abort, make_response, request
 from ..db import db
 from ..models.board import Board
 from ..models.card import Card
-from .route_utilities import validate_model
+from .route_utilities import validate_model, send_slack_notification
 
 boards_bp = Blueprint("board_bp", __name__, url_prefix="/boards")
 
@@ -50,6 +50,8 @@ def create_card_with_board_id(board_id):
     
     db.session.add(new_card)
     db.session.commit()
+
+    send_slack_notification(f"New card posted: {new_card.message}")
 
     return new_card.to_dict(), 201
 
